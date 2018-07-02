@@ -3,11 +3,8 @@ package tr.edu.itu.cavabunga.cavabungacaldav.service;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.jdom2.input.SAXBuilder;
 import org.springframework.stereotype.Service;
-import sun.misc.IOUtils;
-import sun.nio.ch.IOUtil;
-import tr.edu.itu.cavabunga.cavabungacaldav.dav.CaldavRequestMethod;
+import tr.edu.itu.cavabunga.cavabungacaldav.caldav.enumerator.CaldavRequestMethod;
 import tr.edu.itu.cavabunga.cavabungacaldav.exception.CaldavException;
 
 import java.io.StringReader;

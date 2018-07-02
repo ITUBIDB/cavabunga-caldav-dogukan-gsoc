@@ -1,4 +1,4 @@
-package tr.edu.itu.cavabunga.cavabungacaldav.dav;
+package tr.edu.itu.cavabunga.cavabungacaldav.caldav.enumerator;
 
 public enum CaldavRequestMethod {
     GET("GET"),
