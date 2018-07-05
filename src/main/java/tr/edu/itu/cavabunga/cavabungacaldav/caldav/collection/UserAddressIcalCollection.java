@@ -1,4 +1,6 @@
 package tr.edu.itu.cavabunga.cavabungacaldav.caldav.collection;
 
-public class UserAddressIcalCollection extends AbstractCaldavCollection{
+import tr.edu.itu.cavabunga.cavabungacaldav.caldav.AbstractCaldavCollection;
+
+public class UserAddressIcalCollection extends AbstractCaldavCollection {
 }

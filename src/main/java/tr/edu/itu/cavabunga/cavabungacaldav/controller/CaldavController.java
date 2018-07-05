@@ -8,21 +8,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tr.edu.itu.cavabunga.cavabungacaldav.service.CaldavService;
+import tr.edu.itu.cavabunga.cavabungacaldav.service.MainCollectionService;
 
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
 public class CaldavController {
-    private CaldavService caldavService;
+    private MainCollectionService mainCollectionService;
 
     @Autowired
-    public CaldavController(CaldavService caldavService){
-        this.caldavService = caldavService;
+    public CaldavController(MainCollectionService mainCollectionService){
+        this.mainCollectionService = mainCollectionService;
     }
 
     @RequestMapping("/")
     public String getMainCollection(HttpServletRequest httpServletRequest, @RequestBody(required = false) String requestBody, @AuthenticationPrincipal UserDetails userDetails){
-         return this.caldavService.getCaldavResponse(httpServletRequest.getMethod(), httpServletRequest.getRequestURI(), requestBody, userDetails.getUsername());
+         return this.mainCollectionService.getCaldavResponse(httpServletRequest.getMethod(), httpServletRequest.getRequestURI(), requestBody, userDetails.getUsername());
     }
 
     @RequestMapping("/{user_name}")
