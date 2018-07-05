@@ -27,7 +27,7 @@ public class MainCollectionService {
     public String getCaldavResponse(String httpMethod,
                                     String requestBody,
                                     UserDetails userDetails){
-        CaldavRequestMethod method = CaldavRequestMethod.converToEnum(httpMethod);
+        CaldavRequestMethod method = CaldavRequestMethod.convertToEnum(httpMethod);
         switch (method){
             case GET:
                 return getGetResponse(requestBody, userDetails);
