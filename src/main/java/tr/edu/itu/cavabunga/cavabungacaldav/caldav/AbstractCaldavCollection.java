@@ -11,4 +11,8 @@ abstract public class AbstractCaldavCollection {
     private List<AbstractCaldavProperty> properties = new ArrayList<>();
     private List<String> header;
     private String content;
+
+    public void addProperty(AbstractCaldavProperty property){
+        this.properties.add(property);
+    }
 }

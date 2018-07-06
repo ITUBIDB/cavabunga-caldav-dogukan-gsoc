@@ -21,7 +21,7 @@ public class MainCollectionBuilder implements CaldavCollectionBuilder {
 
     }
 
-    public AbstractCaldavCollection build(UserDetails userDetails,){
+    public AbstractCaldavCollection build(UserDetails userDetails){
         AbstractCaldavCollection collection = caldavCollectionFactory.createCollection(CaldavCollection.MAIN_COLLECTTION);
         AbstractCaldavProperty resourceType = caldavPropertyFactory.createProperty(CaldavProperty.RESOURCE_TYPE);
             resourceType.setValue("<collection/>");
@@ -31,6 +31,19 @@ public class MainCollectionBuilder implements CaldavCollectionBuilder {
             principalUrl.setValue("<href>/" + userDetails.getUsername() + "/</href>");
         AbstractCaldavProperty calendarHomeSet = caldavPropertyFactory.createProperty(CaldavProperty.CALENDAR_HOME_SET);
             calendarHomeSet.setValue("<href>/" + userDetails.getUsername() + "/</href>");
+        AbstractCaldavProperty calendarUserAddressSet = caldavPropertyFactory.createProperty(CaldavProperty.CALENDAR_USER_ADDRESS_SET);
+            //TODO: add user mail address via PrincipalService on cavabunga-server
+            calendarUserAddressSet.setValue("<href>/" + userDetails.getUsername() + "@itu.edu.tr" + "/</href>" + "<href>/" + userDetails.getUsername() + "/</href>" );
+        AbstractCaldavProperty addressbookHomeSet = caldavPropertyFactory.createProperty(CaldavProperty.ADDRESSBOOK_HOME_SET);
+            addressbookHomeSet.setValue("<href>/" + userDetails.getUsername() + "/</href>");
 
+            collection.addProperty(resourceType);
+            collection.addProperty(currentUserPricipal);
+            collection.addProperty(principalUrl);
+            collection.addProperty(calendarHomeSet);
+            collection.addProperty(calendarUserAddressSet);
+            collection.addProperty(addressbookHomeSet);
+
+         return collection;
     }
 }

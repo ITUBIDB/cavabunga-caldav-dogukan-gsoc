@@ -39,7 +39,39 @@ public enum CaldavProperty {
         public AbstractCaldavProperty create(){
             return new PrincipalAddress();
         }
-    };
+    },
+    HREF("href"){
+        public AbstractCaldavProperty create() { return new Href();}
+    },
+    COLLECTION("collection"){
+        public AbstractCaldavProperty create() { return new Collection();}
+    },
+    DISPLAYNAME("displayname"){
+        public AbstractCaldavProperty create() { return new Displayname();}
+    },
+    CALENDAR_DESCRIPTION("calendar-description"){
+        public AbstractCaldavProperty create() { return new CalendarDescription(); }
+    },
+    SUPPORTED_CALENDAR_COMPONENT_SET("calendar-user-address-set"){
+        public AbstractCaldavProperty create() { return new SupportedCalendarComponentSet(); }
+    },
+    CALENDAR_COLOR("calendar-color"){
+        public AbstractCaldavProperty create() { return new CalendarColor(); }
+    },
+    CALENDAR("calendar"){
+        public AbstractCaldavProperty create() { return new Calendar(); }
+    },
+    ADDRESSBOOK("addressbook"){
+        public AbstractCaldavProperty create() { return new Addressbook(); }
+    },
+    COMP("comp"){
+        public AbstractCaldavProperty create() { return new Comp(); }
+    },
+    GET_ETAG("getetag"){
+        public AbstractCaldavProperty create() { return new GetETag();}
+    },
+
+    ;
 
     private String text;
 

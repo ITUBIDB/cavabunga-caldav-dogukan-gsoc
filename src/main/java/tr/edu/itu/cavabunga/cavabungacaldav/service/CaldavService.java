@@ -83,7 +83,7 @@ public class CaldavService {
         }
 
         Element element =  document.getRootElement();
-
+        return "";
     }
 
     public String processProppatchRequest(){
