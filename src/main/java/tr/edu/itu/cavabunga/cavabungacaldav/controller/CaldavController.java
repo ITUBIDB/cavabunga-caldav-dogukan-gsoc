@@ -22,9 +22,10 @@ public class CaldavController {
 
     @RequestMapping("/")
     public String getMainCollection(HttpServletRequest httpServletRequest, @RequestBody(required = false) String requestBody, @AuthenticationPrincipal UserDetails userDetails){
-         return this.mainCollectionService.getCaldavResponse(httpServletRequest.getMethod(), httpServletRequest.getRequestURI(), requestBody, userDetails.getUsername());
+         return this.mainCollectionService.getCaldavResponse(httpServletRequest.getMethod(), requestBody, userDetails);
     }
 
+    /*
     @RequestMapping("/{user_name}")
     public String getUserCollection(){}
 
@@ -35,5 +36,5 @@ public class CaldavController {
     public String getUserCalendarIcalCollection(){}
 
     @RequestMapping("/{user_name}/addresses/{ical_file}")
-    public String getUserAddressIcalCollection(){}
+    public String getUserAddressIcalCollection(){} */
 }

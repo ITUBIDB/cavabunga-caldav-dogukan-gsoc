@@ -2,6 +2,7 @@ package tr.edu.itu.cavabunga.cavabungacaldav.caldav.build.collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 import tr.edu.itu.cavabunga.cavabungacaldav.caldav.AbstractCaldavCollection;
 import tr.edu.itu.cavabunga.cavabungacaldav.caldav.AbstractCaldavProperty;
 import tr.edu.itu.cavabunga.cavabungacaldav.caldav.enumerator.CaldavCollection;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Component
 public class MainCollectionBuilder implements CaldavCollectionBuilder {
     private CaldavCollectionFactory caldavCollectionFactory;
     private CaldavPropertyFactory caldavPropertyFactory;
@@ -36,29 +38,40 @@ public class MainCollectionBuilder implements CaldavCollectionBuilder {
     public AbstractCaldavCollection build(UserDetails userDetails){
         this.argumentReplaceList.put(ExpressionEnum.USERNAME, userDetails.getUsername());
         this.argumentReplaceList.put(ExpressionEnum.USER_MAIL, userDetails.getUsername() + "@itu.edu.tr");
+        return buildProperties(this.caldavCollectionFactory.createCollection(CaldavCollection.MAIN_COLLECTTION));
     }
 
-    public AbstractCaldavCollection buildProperties(AbstractCaldavCollection collection, String userName){
+    public AbstractCaldavCollection buildProperties(AbstractCaldavCollection collection){
         for(CaldavProperty p : this.mainCollectionConfiguration.getCollectionPropertyMap().keySet()){
             AbstractCaldavProperty property;
             property = this.caldavPropertyFactory.createProperty(p);
             property.setXmlTag(p.toString());
-            property.setXmlValue(expressionReplacer(this.mainCollectionConfiguration.getCollectionPropertyMap().get(p), this.argumentReplaceList));
+            property.setXmlValue(expressionReplacer(p));
             collection.addProperty(property);
         }
 
         return collection;
     }
 
-    public AbstractCaldavCollection buildHeaders(String userName, CaldavRequestMethod method){
+    public void buildHeaders(String userName, CaldavRequestMethod method){
 
     }
 
-    public AbstractCaldavCollection buildContent(String userName, CaldavRequestMethod method){
+    public void buildContent(String userName, CaldavRequestMethod method){
 
     }
 
-    public String expressionReplacer(List<String> expressionList, Map<ExpressionEnum, String> argumentReplaceList){
-        return "";
+    public String expressionReplacer(CaldavProperty p){
+        List<String> defaultExpression = this.mainCollectionConfiguration.getCollectionPropertyMap().get(p);
+        String result = new String();
+        for(String s : defaultExpression){
+            for(Map.Entry<ExpressionEnum, String> e : this.argumentReplaceList.entrySet()){
+                if(!s.equals(s.replace(e.getKey().toString(), e.getValue()))){
+                    result = result + s.replace(e.getKey().toString(), e.getValue());
+                }
+            }
+        }
+
+        return result;
     }
 }
