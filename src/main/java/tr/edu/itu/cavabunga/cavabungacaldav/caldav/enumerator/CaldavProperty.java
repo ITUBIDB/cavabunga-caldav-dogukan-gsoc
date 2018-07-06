@@ -70,8 +70,42 @@ public enum CaldavProperty {
     GET_ETAG("getetag"){
         public AbstractCaldavProperty create() { return new GetETag();}
     },
-
-    ;
+    FILTER("filter"){
+        public AbstractCaldavProperty create() { return new Filter(); }
+    },
+    COMP_FILTER("comp-filter"){
+        public AbstractCaldavProperty create() { return new CompFilter(); }
+    },
+    TIME_RANGE("time-range"){
+        public AbstractCaldavProperty create() { return new TimeRange();}
+    },
+    CALENDAR_QUERY("calendar-query"){
+        public AbstractCaldavProperty create() { return new CalendarQuery();}
+    },
+    CALENDAR_DATA("calendar-data"){
+        public AbstractCaldavProperty create() { return new CalendarData(); }
+    },
+    CALENDAR_MULTIGET("calendar-multiget"){
+        public AbstractCaldavProperty create() { return new CalendarMultiget();}
+    },
+    MULTISTATUS("multistatus"){
+        public AbstractCaldavProperty create() { return new Multistatus(); }
+    },
+    RESPONSE("response"){
+        public AbstractCaldavProperty create() { return new Response(); }
+    },
+    PROPSTAT("propstat"){
+        public AbstractCaldavProperty create() { return new Propstat(); }
+    },
+    PROP("prop"){
+        public AbstractCaldavProperty create() { return new Prop(); }
+    },
+    STATUS("status"){
+        public AbstractCaldavProperty create() { return new Status();}
+    },
+    GET_CTAG("getctag"){
+        public AbstractCaldavProperty create() { return new GetCTag();}
+    };
 
     private String text;
 
