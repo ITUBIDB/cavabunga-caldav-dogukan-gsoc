@@ -7,7 +7,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import tr.edu.itu.cavabunga.cavabungacaldav.service.CaldavService;
 import tr.edu.itu.cavabunga.cavabungacaldav.service.MainCollectionService;
 
 import javax.servlet.http.HttpServletRequest;

@@ -7,9 +7,9 @@ import java.util.List;
 
 @Data
 abstract public class AbstractCaldavProperty {
-    private String key;
-    private String value;
-    private String namespace;
-    private List<String> attributes = new ArrayList<>();
+    private String xmlTag;
+    private String xmlValue;
+    private String xmlNamespace;
+    private List<String> xmlAttributes = new ArrayList<>();
     private List<AbstractCaldavProperty> properties = new ArrayList<>();
-}
+ }

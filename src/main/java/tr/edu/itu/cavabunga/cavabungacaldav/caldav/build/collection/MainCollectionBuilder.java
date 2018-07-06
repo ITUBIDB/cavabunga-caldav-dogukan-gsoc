@@ -6,44 +6,59 @@ import tr.edu.itu.cavabunga.cavabungacaldav.caldav.AbstractCaldavCollection;
 import tr.edu.itu.cavabunga.cavabungacaldav.caldav.AbstractCaldavProperty;
 import tr.edu.itu.cavabunga.cavabungacaldav.caldav.enumerator.CaldavCollection;
 import tr.edu.itu.cavabunga.cavabungacaldav.caldav.enumerator.CaldavProperty;
+import tr.edu.itu.cavabunga.cavabungacaldav.caldav.enumerator.CaldavRequestMethod;
+import tr.edu.itu.cavabunga.cavabungacaldav.caldav.enumerator.ExpressionEnum;
 import tr.edu.itu.cavabunga.cavabungacaldav.caldav.factory.CaldavCollectionFactory;
 import tr.edu.itu.cavabunga.cavabungacaldav.caldav.factory.CaldavPropertyFactory;
+import tr.edu.itu.cavabunga.cavabungacaldav.configuration.caldav.MainCollectionConfiguration;
+
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MainCollectionBuilder implements CaldavCollectionBuilder {
     private CaldavCollectionFactory caldavCollectionFactory;
     private CaldavPropertyFactory caldavPropertyFactory;
+    private MainCollectionConfiguration mainCollectionConfiguration;
+    private Map<ExpressionEnum, String> argumentReplaceList;
 
     @Autowired
     public MainCollectionBuilder(CaldavCollectionFactory caldavCollectionFactory,
-                                 CaldavPropertyFactory caldavPropertyFactory){
+                                 CaldavPropertyFactory caldavPropertyFactory,
+                                 MainCollectionConfiguration mainCollectionConfiguration){
         this.caldavCollectionFactory = caldavCollectionFactory;
         this.caldavPropertyFactory = caldavPropertyFactory;
+        this.mainCollectionConfiguration = mainCollectionConfiguration;
+        this.argumentReplaceList = new ConcurrentHashMap<>();
 
     }
 
     public AbstractCaldavCollection build(UserDetails userDetails){
-        AbstractCaldavCollection collection = caldavCollectionFactory.createCollection(CaldavCollection.MAIN_COLLECTTION);
-        AbstractCaldavProperty resourceType = caldavPropertyFactory.createProperty(CaldavProperty.RESOURCE_TYPE);
-            resourceType.setValue("<collection/>");
-        AbstractCaldavProperty currentUserPricipal = caldavPropertyFactory.createProperty(CaldavProperty.CURRENT_USER_PRINCIPAL);
-            currentUserPricipal.setValue("<href>/" + userDetails.getUsername() + "/</href>");
-        AbstractCaldavProperty principalUrl = caldavPropertyFactory.createProperty(CaldavProperty.PRINCIPAL_URL);
-            principalUrl.setValue("<href>/" + userDetails.getUsername() + "/</href>");
-        AbstractCaldavProperty calendarHomeSet = caldavPropertyFactory.createProperty(CaldavProperty.CALENDAR_HOME_SET);
-            calendarHomeSet.setValue("<href>/" + userDetails.getUsername() + "/</href>");
-        AbstractCaldavProperty calendarUserAddressSet = caldavPropertyFactory.createProperty(CaldavProperty.CALENDAR_USER_ADDRESS_SET);
-            //TODO: add user mail address via PrincipalService on cavabunga-server
-            calendarUserAddressSet.setValue("<href>/" + userDetails.getUsername() + "@itu.edu.tr" + "/</href>" + "<href>/" + userDetails.getUsername() + "/</href>" );
-        AbstractCaldavProperty addressbookHomeSet = caldavPropertyFactory.createProperty(CaldavProperty.ADDRESSBOOK_HOME_SET);
-            addressbookHomeSet.setValue("<href>/" + userDetails.getUsername() + "/</href>");
+        this.argumentReplaceList.put(ExpressionEnum.USERNAME, userDetails.getUsername());
+        this.argumentReplaceList.put(ExpressionEnum.USER_MAIL, userDetails.getUsername() + "@itu.edu.tr");
+    }
 
-            collection.addProperty(resourceType);
-            collection.addProperty(currentUserPricipal);
-            collection.addProperty(principalUrl);
-            collection.addProperty(calendarHomeSet);
-            collection.addProperty(calendarUserAddressSet);
-            collection.addProperty(addressbookHomeSet);
+    public AbstractCaldavCollection buildProperties(AbstractCaldavCollection collection, String userName){
+        for(CaldavProperty p : this.mainCollectionConfiguration.getCollectionPropertyMap().keySet()){
+            AbstractCaldavProperty property;
+            property = this.caldavPropertyFactory.createProperty(p);
+            property.setXmlTag(p.toString());
+            property.setXmlValue(expressionReplacer(this.mainCollectionConfiguration.getCollectionPropertyMap().get(p), this.argumentReplaceList));
+            collection.addProperty(property);
+        }
 
-         return collection;
+        return collection;
+    }
+
+    public AbstractCaldavCollection buildHeaders(String userName, CaldavRequestMethod method){
+
+    }
+
+    public AbstractCaldavCollection buildContent(String userName, CaldavRequestMethod method){
+
+    }
+
+    public String expressionReplacer(List<String> expressionList, Map<ExpressionEnum, String> argumentReplaceList){
+        return "";
     }
 }
