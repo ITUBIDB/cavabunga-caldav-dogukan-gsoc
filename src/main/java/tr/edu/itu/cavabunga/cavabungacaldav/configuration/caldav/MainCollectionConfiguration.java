@@ -13,15 +13,15 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 @Data
 public class MainCollectionConfiguration extends CaldavCollectionConfiguration {
-    private Map<CaldavProperty, List<String>> collectionPropertyMap;
+    private Map<CaldavProperty, String> collectionPropertyMap;
 
     public MainCollectionConfiguration(){
         this.collectionPropertyMap = new ConcurrentHashMap<>();
-        collectionPropertyMap.put(CaldavProperty.RESOURCE_TYPE,  Arrays.asList("</collection>"));
-        collectionPropertyMap.put(CaldavProperty.CURRENT_USER_PRINCIPAL, Arrays.asList("<href>/" + ExpressionEnum.USERNAME.toString() + "/</href>"));
-        collectionPropertyMap.put(CaldavProperty.PRINCIPAL_URL, Arrays.asList("<href>/" + ExpressionEnum.USERNAME.toString() + "/</href>"));
-        collectionPropertyMap.put(CaldavProperty.CALENDAR_HOME_SET, Arrays.asList("<href>/" + ExpressionEnum.USERNAME.toString() + "/</href>"));
-        collectionPropertyMap.put(CaldavProperty.CALENDAR_USER_ADDRESS_SET, Arrays.asList("<href>/" + ExpressionEnum.USERNAME.toString() + "/</href>","<href>mailto:" + ExpressionEnum.USER_MAIL.toString() + "</href>"));
-        collectionPropertyMap.put(CaldavProperty.CALENDAR_HOME_SET, Arrays.asList("<href>/" + ExpressionEnum.USERNAME.toString() + "/</href>"));
+        collectionPropertyMap.put(CaldavProperty.RESOURCE_TYPE, "</collection>");
+        collectionPropertyMap.put(CaldavProperty.CURRENT_USER_PRINCIPAL, "<href>/" + ExpressionEnum.USERNAME.toString() + "/</href>");
+        collectionPropertyMap.put(CaldavProperty.PRINCIPAL_URL, "<href>/" + ExpressionEnum.USERNAME.toString() + "/</href>");
+        collectionPropertyMap.put(CaldavProperty.CALENDAR_HOME_SET, "<href>/" + ExpressionEnum.USERNAME.toString() + "/</href>");
+        collectionPropertyMap.put(CaldavProperty.CALENDAR_USER_ADDRESS_SET, "<href>/" + ExpressionEnum.USERNAME.toString() + "/</href>" + "<href>mailto:" + ExpressionEnum.USER_MAIL.toString() + "</href>");
+        collectionPropertyMap.put(CaldavProperty.CALENDAR_HOME_SET, "<href>/" + ExpressionEnum.USERNAME.toString() + "/</href>");
     }
 }

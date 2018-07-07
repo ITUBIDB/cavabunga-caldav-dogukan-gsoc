@@ -5,7 +5,7 @@ import tr.edu.itu.cavabunga.cavabungacaldav.caldav.property.*;
 import tr.edu.itu.cavabunga.cavabungacaldav.exception.CaldavException;
 
 public enum CaldavProperty {
-    RESOURCE_TYPE("resource-type"){
+    RESOURCE_TYPE("resourcetype"){
         public AbstractCaldavProperty create(){
             return new ResourceType();
         }
@@ -123,10 +123,11 @@ public enum CaldavProperty {
     }
 
     public static CaldavProperty convertToEnum(String propertyXmlName){
-        try {
-            return CaldavProperty.valueOf(propertyXmlName);
-        }catch (IllegalArgumentException e){
-            throw new CaldavException("Property xml name is not defined in CaldavProperty enum propertyXmlName: " + e.getMessage());
+        for(CaldavProperty c : CaldavProperty.values()){
+            if(c.toString().equals(propertyXmlName)){
+                return c;
+            }
         }
+        return null;
     }
 }

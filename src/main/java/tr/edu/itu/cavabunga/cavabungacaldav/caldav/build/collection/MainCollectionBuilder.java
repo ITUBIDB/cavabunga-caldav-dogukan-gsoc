@@ -62,14 +62,11 @@ public class MainCollectionBuilder implements CaldavCollectionBuilder {
     }
 
     public String expressionReplacer(CaldavProperty p){
-        List<String> defaultExpression = this.mainCollectionConfiguration.getCollectionPropertyMap().get(p);
-        String result = new String();
-        for(String s : defaultExpression){
-            for(Map.Entry<ExpressionEnum, String> e : this.argumentReplaceList.entrySet()){
-                if(!s.equals(s.replace(e.getKey().toString(), e.getValue()))){
-                    result = result + s.replace(e.getKey().toString(), e.getValue());
-                }
-            }
+        String defaultExpression = this.mainCollectionConfiguration.getCollectionPropertyMap().get(p);
+        String result;
+        result = defaultExpression;
+        for(Map.Entry<ExpressionEnum, String> e : this.argumentReplaceList.entrySet()){
+                result = result.replace(e.getKey().toString(), e.getValue());
         }
 
         return result;
