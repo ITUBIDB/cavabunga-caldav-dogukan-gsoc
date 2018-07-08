@@ -3,35 +3,33 @@ package tr.edu.itu.cavabunga.cavabungacaldav.service;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
-import org.jdom2.output.XMLOutputter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import tr.edu.itu.cavabunga.cavabungacaldav.caldav.AbstractCaldavCollection;
-import tr.edu.itu.cavabunga.cavabungacaldav.caldav.AbstractCaldavProperty;
 import tr.edu.itu.cavabunga.cavabungacaldav.caldav.build.collection.CaldavCollectionBuilderImpl;
-import tr.edu.itu.cavabunga.cavabungacaldav.caldav.build.response.MainCollectionResponseBuilder;
-import tr.edu.itu.cavabunga.cavabungacaldav.caldav.enumerator.CaldavProperty;
+import tr.edu.itu.cavabunga.cavabungacaldav.caldav.build.response.CaldavResponseBuilder;
+import tr.edu.itu.cavabunga.cavabungacaldav.caldav.build.response.CaldavResponseBuilderImpl;
+import tr.edu.itu.cavabunga.cavabungacaldav.caldav.enumerator.CaldavCollection;
 import tr.edu.itu.cavabunga.cavabungacaldav.caldav.enumerator.CaldavRequestMethod;
 import tr.edu.itu.cavabunga.cavabungacaldav.configuration.caldav.CaldavCollectionConfiguration;
 import tr.edu.itu.cavabunga.cavabungacaldav.exception.CaldavException;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class MainCollectionService {
     private CaldavCollectionConfiguration caldavCollectionConfigurationImpl;
     private CaldavCollectionBuilderImpl caldavCollectionBuilderImpl;
-    private MainCollectionResponseBuilder mainCollectionResponseBuilder;
+    private CaldavResponseBuilderImpl caldavResponseBuilderImpl;
+
 
     @Autowired
     public MainCollectionService(CaldavCollectionConfiguration caldavCollectionConfigurationImpl,
                                  CaldavCollectionBuilderImpl caldavCollectionBuilderImpl,
-                                 MainCollectionResponseBuilder mainCollectionResponseBuilder){
+                                 CaldavResponseBuilderImpl caldavResponseBuilderImpl){
         this.caldavCollectionConfigurationImpl = caldavCollectionConfigurationImpl;
         this.caldavCollectionBuilderImpl = caldavCollectionBuilderImpl;
-        this.mainCollectionResponseBuilder = mainCollectionResponseBuilder;
+        this.caldavResponseBuilderImpl = caldavResponseBuilderImpl;
     }
 
     public String getCaldavResponse(String httpMethod,
@@ -95,14 +93,9 @@ public class MainCollectionService {
 
     public String getPorpfindResponse(String requestBody, UserDetails userDetails){
 
-        AbstractCaldavCollection collection = this.caldavCollectionBuilderImpl.build(userDetails);
-
+        AbstractCaldavCollection collection = this.caldavCollectionBuilderImpl.build(CaldavCollection.MAIN_COLLECTTION, userDetails);
         SAXBuilder xmlBuilder = new SAXBuilder();
         org.jdom2.Document document;
-        Namespace propfindNamespace;
-        Namespace propNamespace;
-        List<String> queriedProperties =  new ArrayList<>();
-       // String result;
 
         try{
             document = xmlBuilder.build(new StringReader(requestBody));
@@ -113,93 +106,15 @@ public class MainCollectionService {
         if(!document.getRootElement().getName().equals("propfind")){
             throw new CaldavException("propfind root element couldn found");
         }
-        propfindNamespace = document.getRootElement().getNamespace();
+
         Element propfind = document.getRootElement();
 
         if(!propfind.getChildren().get(0).getName().equals("prop")){
             throw new CaldavException("prop element cound not found");
         }
         Element prop = propfind.getChildren().get(0);
-        propNamespace = propfind.getChildren().get(0).getNamespace();
 
-        List<Element> foundProperties = new ArrayList<>();
-        List<Element> notFoundProperties = new ArrayList<>();
-        for(Element e : prop.getChildren()){
-            String t;
-            try {
-                t = CaldavProperty.convertToEnum(e.getName()).create().getClass().getName();
-            }catch (Exception exp){
-                notFoundProperties.add(e);
-                continue;
-            }
-
-            boolean found = false;
-            for(AbstractCaldavProperty p : collection.getProperties()){
-                Element add = xmlBuilder.getJDOMFactory().element(p.getXmlTag());
-                String test = p.getClass().getName();
-                if(t.equals(test)){
-                    add.setText(p.getXmlValue());
-                    add.setNamespace(e.getNamespace());
-                    if(!foundProperties.contains(add)){
-                        foundProperties.add(add);
-                        found = true;
-                        break;
-                    }
-                }
-
-            }
-
-            if(!found){
-                notFoundProperties.add(e);
-            }
-            //Element add = xmlBuilder.getJDOMFactory().element(p.getXmlTag());
-        }
-
-        org.jdom2.Document result = new org.jdom2.Document();
-        Element multistatus = new Element("multistatus", propfindNamespace);
-        Element response = new Element("response", propfindNamespace);
-
-        Element propstatFound = new Element("propstat", propNamespace);
-        Element propFound = new Element("prop", propNamespace);
-        Element statusFound = new Element("status", propNamespace);
-        statusFound.setText("HTTP/1.1 200 OK");
-        for(Element k : foundProperties){
-            System.out.println(k.getName());
-            k.detach();
-            propFound.addContent(k);
-        }
-        propFound.detach();
-        propstatFound.addContent(propFound);
-        statusFound.detach();
-        propstatFound.addContent(statusFound);
-
-
-        Element propstatNotFound = new Element("propstat", propNamespace);
-        Element propNotFound = new Element("prop", propNamespace);
-        Element statusNotFound = new Element("status", propNamespace);
-        statusNotFound.setText("HTTP/1.1 404 Not Found");
-        for(Element q : notFoundProperties){
-            System.out.println(q.getName());
-            q.detach();
-            propNotFound.addContent(q);
-        }
-        propNotFound.detach();
-        propstatNotFound.addContent(propNotFound);
-        statusNotFound.detach();
-        propstatNotFound.addContent(statusNotFound);
-
-        propstatFound.detach();
-        response.addContent(propstatFound);
-
-        propstatNotFound.detach();
-        response.addContent(propstatNotFound);
-
-        response.detach();
-        multistatus.addContent(response);
-
-        multistatus.detach();
-        result.setRootElement(multistatus);
-        return new XMLOutputter().outputString(result);
+        return this.caldavResponseBuilderImpl.getResponse(collection, prop);
     }
 
     public String getProppatchResponse(String requestBody, UserDetails userDetails){

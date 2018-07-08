@@ -42,24 +42,31 @@ public class CaldavCollectionBuilderImpl implements CaldavCollectionBuilder {
         return buildCollection(caldavCollection);
     }
 
-    public AbstractCaldavCollection buildProperties(CaldavCollection caldavCollection){
-        AbstractCaldavCollection collection = caldavCollectionFactory.createCollection(caldavCollection);
-        for(CaldavProperty p : this.caldavCollectionConfiguration.getCollectionPropertyMap().get(caldavCollection).keySet()){
-            AbstractCaldavProperty property;
-            property = this.caldavPropertyFactory.createProperty(p);
-            property.setXmlTag(p.toString());
-            property.setXmlValue(expressionReplacer(caldavCollection, p));
-            collection.addProperty(property);
-        }
-        return collection;
+    public AbstractCaldavCollection buildProperties(AbstractCaldavCollection collection, CaldavCollection caldavCollection){
+           try {
+               for (Map.Entry<CaldavProperty, String> p : this.caldavCollectionConfiguration.getCollectionPropertyMap().get(caldavCollection).entrySet()){
+                   AbstractCaldavProperty property;
+                   property = this.caldavPropertyFactory.createProperty(p.getKey());
+                   property.setXmlTag(p.getKey().toString());
+                   property.setXmlValue(expressionReplacer(caldavCollection, p.getKey()));
+                   collection.addProperty(property);
+               }
+               return collection;
+           }catch (Exception e){
+                return collection;
+           }
     }
 
     public AbstractCaldavCollection buildCollection(CaldavCollection caldavCollection){
-        AbstractCaldavCollection collection = this.buildProperties(caldavCollection);
-        for(CaldavCollection c : this.caldavCollectionConfiguration.getCollectionCollectionMap().get(caldavCollection)){
-            collection.addCollection(this.buildProperties(c));
+        AbstractCaldavCollection collection = this.caldavCollectionFactory.createCollection(caldavCollection);
+        if(this.caldavCollectionConfiguration.getCollectionCollectionMap().get(caldavCollection) != null ||
+                !this.caldavCollectionConfiguration.getCollectionCollectionMap().get(caldavCollection).isEmpty()){
+            for (CaldavCollection c : this.caldavCollectionConfiguration.getCollectionCollectionMap().get(caldavCollection)) {
+                collection.setUri("");
+                collection.addCollection(buildProperties(this.buildCollection(c), c));
+            }
         }
-        return collection;
+        return buildProperties(collection, caldavCollection);
     }
 
 
