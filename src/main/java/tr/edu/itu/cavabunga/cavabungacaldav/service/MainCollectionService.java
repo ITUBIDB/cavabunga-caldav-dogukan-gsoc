@@ -9,11 +9,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import tr.edu.itu.cavabunga.cavabungacaldav.caldav.AbstractCaldavCollection;
 import tr.edu.itu.cavabunga.cavabungacaldav.caldav.AbstractCaldavProperty;
-import tr.edu.itu.cavabunga.cavabungacaldav.caldav.build.collection.MainCollectionBuilder;
+import tr.edu.itu.cavabunga.cavabungacaldav.caldav.build.collection.CaldavCollectionBuilderImpl;
 import tr.edu.itu.cavabunga.cavabungacaldav.caldav.build.response.MainCollectionResponseBuilder;
 import tr.edu.itu.cavabunga.cavabungacaldav.caldav.enumerator.CaldavProperty;
 import tr.edu.itu.cavabunga.cavabungacaldav.caldav.enumerator.CaldavRequestMethod;
-import tr.edu.itu.cavabunga.cavabungacaldav.configuration.caldav.MainCollectionConfiguration;
+import tr.edu.itu.cavabunga.cavabungacaldav.configuration.caldav.CaldavCollectionConfiguration;
 import tr.edu.itu.cavabunga.cavabungacaldav.exception.CaldavException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -21,16 +21,16 @@ import java.util.List;
 
 @Service
 public class MainCollectionService {
-    private MainCollectionConfiguration mainCollectionConfiguration;
-    private MainCollectionBuilder mainCollectionBuilder;
+    private CaldavCollectionConfiguration caldavCollectionConfigurationImpl;
+    private CaldavCollectionBuilderImpl caldavCollectionBuilderImpl;
     private MainCollectionResponseBuilder mainCollectionResponseBuilder;
 
     @Autowired
-    public MainCollectionService(MainCollectionConfiguration mainCollectionConfiguration,
-                                 MainCollectionBuilder mainCollectionBuilder,
+    public MainCollectionService(CaldavCollectionConfiguration caldavCollectionConfigurationImpl,
+                                 CaldavCollectionBuilderImpl caldavCollectionBuilderImpl,
                                  MainCollectionResponseBuilder mainCollectionResponseBuilder){
-        this.mainCollectionConfiguration = mainCollectionConfiguration;
-        this.mainCollectionBuilder = mainCollectionBuilder;
+        this.caldavCollectionConfigurationImpl = caldavCollectionConfigurationImpl;
+        this.caldavCollectionBuilderImpl = caldavCollectionBuilderImpl;
         this.mainCollectionResponseBuilder = mainCollectionResponseBuilder;
     }
 
@@ -95,7 +95,7 @@ public class MainCollectionService {
 
     public String getPorpfindResponse(String requestBody, UserDetails userDetails){
 
-        AbstractCaldavCollection collection = this.mainCollectionBuilder.build(userDetails);
+        AbstractCaldavCollection collection = this.caldavCollectionBuilderImpl.build(userDetails);
 
         SAXBuilder xmlBuilder = new SAXBuilder();
         org.jdom2.Document document;
