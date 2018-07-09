@@ -43,17 +43,29 @@ public class CaldavCollectionConfigurationImpl implements CaldavCollectionConfig
             put(CaldavProperty.CALENDAR_HOME_SET, "<href>/" + ExpressionEnum.USERNAME.toString() + "/</href>");
             put(CaldavProperty.CALENDAR_USER_ADDRESS_SET, "<href>/" + ExpressionEnum.USERNAME.toString() + "/</href>" + "<href>mailto:" + ExpressionEnum.USER_MAIL.toString() + "</href>");
             put(CaldavProperty.CALENDAR_HOME_SET, "<href>/" + ExpressionEnum.USERNAME.toString() + "/</href>");
+            put(CaldavProperty.GET_CTAG, "-1");
+            put(CaldavProperty.GET_ETAG, "-1");
         }});
         collectionPropertyMap.put(CaldavCollection.USER_COLLECTION,new HashMap<CaldavProperty, String>(){{
             put(CaldavProperty.RESOURCE_TYPE, "<collection/><principal/>");
             put(CaldavProperty.CALENDAR_USER_ADDRESS_SET, "<href>/" + ExpressionEnum.USERNAME.toString() + "/</href>" + "<href>mailto:" + ExpressionEnum.USER_MAIL.toString() + "</href>");
             put(CaldavProperty.DISPLAYNAME, ExpressionEnum.USERNAME.toString());
+            put(CaldavProperty.GET_CTAG, "-1");
+            put(CaldavProperty.GET_ETAG, "-1");
         }});
         collectionPropertyMap.put(CaldavCollection.USER_CALENDAR_COLLECTION,new HashMap<CaldavProperty, String>(){{
             put(CaldavProperty.RESOURCE_TYPE, "<collection/><calendar/>");
             put(CaldavProperty.CALENDAR_USER_ADDRESS_SET, "<href>/" + ExpressionEnum.USERNAME.toString() + "/</href>" + "<href>mailto:" + ExpressionEnum.USER_MAIL.toString() + "</href>");
             put(CaldavProperty.DISPLAYNAME, ExpressionEnum.USERNAME.toString()+ " calendar");
             put(CaldavProperty.SUPPORTED_CALENDAR_COMPONENT_SET, "<comp name=\"VEVENT\"/><comp name=\"VTODO\"/><comp name=\"VJOURNAL\"/>");
+            put(CaldavProperty.GET_CTAG, "-1");
+            put(CaldavProperty.GET_ETAG, "-1");
+            put(CaldavProperty.CALENDAR_DATA, "__CALENDAR_DATA__");
+        }});
+        collectionPropertyMap.put(CaldavCollection.USER_CALENDAR_ICAL_COLLECTION,new HashMap<CaldavProperty, String>(){{
+            put(CaldavProperty.CALENDAR_DATA, "__CALENDAR_DATA__");
+            put(CaldavProperty.GET_CTAG, "-1");
+            put(CaldavProperty.GET_ETAG, "-1");
         }});
     }
 }

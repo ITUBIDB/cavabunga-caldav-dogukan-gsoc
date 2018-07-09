@@ -22,7 +22,7 @@ public class CaldavResponseBuilderImpl implements CaldavResponseBuilder {
     private CaldavCollectionConfiguration caldavCollectionConfigurationImpl;
     private Element multistatus = new Element("multistatus");
 
-    public String getPropfındResponse(AbstractCaldavCollection collection, Element prop){
+    public String getPropfindResponse(AbstractCaldavCollection collection, Element prop){
         Document result = new Document();
         multistatus.detach();
         multistatus.addContent(this.buildPropfindResponse(collection,prop));

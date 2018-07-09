@@ -13,6 +13,7 @@ import tr.edu.itu.cavabunga.cavabungacaldav.caldav.factory.CaldavCollectionFacto
 import tr.edu.itu.cavabunga.cavabungacaldav.caldav.factory.CaldavPropertyFactory;
 import tr.edu.itu.cavabunga.cavabungacaldav.configuration.caldav.CaldavCollectionConfiguration;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -34,10 +35,11 @@ public class CaldavCollectionBuilderImpl implements CaldavCollectionBuilder {
 
     }
 
-    public AbstractCaldavCollection build(CaldavCollection caldavCollection,  UserDetails userDetails){
+    public AbstractCaldavCollection build(HttpServletRequest httpServletRequest, CaldavCollection caldavCollection, UserDetails userDetails){
         this.argumentReplaceList.put(ExpressionEnum.USERNAME, userDetails.getUsername());
         this.argumentReplaceList.put(ExpressionEnum.USER_MAIL, userDetails.getUsername() + "@itu.edu.tr");
-        return buildCollection(caldavCollection);
+
+        return buildCollection(caldavCollection, httpServletRequest.getHeader("Depth"));
     }
 
     public AbstractCaldavCollection buildProperties(AbstractCaldavCollection collection, CaldavCollection caldavCollection){
@@ -57,24 +59,29 @@ public class CaldavCollectionBuilderImpl implements CaldavCollectionBuilder {
            }
     }
 
-    public AbstractCaldavCollection buildCollection(CaldavCollection caldavCollection){
+    public AbstractCaldavCollection buildCollection(CaldavCollection caldavCollection, String depth){
         AbstractCaldavCollection collection = this.caldavCollectionFactory.createCollection(caldavCollection);
         collection.setUri(this.collectionExpressionReplacer(caldavCollection));
-        if(this.caldavCollectionConfiguration.getCollectionCollectionMap().get(caldavCollection) != null ||
-                !this.caldavCollectionConfiguration.getCollectionCollectionMap().get(caldavCollection).isEmpty()){
-            for (CaldavCollection c : this.caldavCollectionConfiguration.getCollectionCollectionMap().get(caldavCollection)) {
-                collection.addCollection(buildProperties(this.buildCollection(c), c));
+        if(depth == null){
+            depth = "0";
+        }
+        if(depth.equals("1") || depth.equals("infinity")) {
+            if (this.caldavCollectionConfiguration.getCollectionCollectionMap().get(caldavCollection) != null ||
+                    !this.caldavCollectionConfiguration.getCollectionCollectionMap().get(caldavCollection).isEmpty()) {
+                for (CaldavCollection c : this.caldavCollectionConfiguration.getCollectionCollectionMap().get(caldavCollection)) {
+                    collection.addCollection(buildProperties(this.buildCollection(c, depth), c));
+                }
             }
         }
         return buildProperties(collection, caldavCollection);
     }
 
 
-    public void buildHeaders(String userName, CaldavRequestMethod method){
+    public void buildHeaders(HttpServletRequest servletRequest, String userName, CaldavRequestMethod method){
 
     }
 
-    public void buildContent(String userName, CaldavRequestMethod method){
+    public void buildContent(HttpServletRequest servletRequest, String userName, CaldavRequestMethod method){
 
     }
 
