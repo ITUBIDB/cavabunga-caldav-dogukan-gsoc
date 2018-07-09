@@ -1,14 +1,12 @@
 package tr.edu.itu.cavabunga.cavabungacaldav.service;
 
 import org.jdom2.Element;
-import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import tr.edu.itu.cavabunga.cavabungacaldav.caldav.AbstractCaldavCollection;
 import tr.edu.itu.cavabunga.cavabungacaldav.caldav.build.collection.CaldavCollectionBuilderImpl;
-import tr.edu.itu.cavabunga.cavabungacaldav.caldav.build.response.CaldavResponseBuilder;
 import tr.edu.itu.cavabunga.cavabungacaldav.caldav.build.response.CaldavResponseBuilderImpl;
 import tr.edu.itu.cavabunga.cavabungacaldav.caldav.enumerator.CaldavCollection;
 import tr.edu.itu.cavabunga.cavabungacaldav.caldav.enumerator.CaldavRequestMethod;
@@ -34,7 +32,8 @@ public class MainCollectionService {
 
     public String getCaldavResponse(String httpMethod,
                                     String requestBody,
-                                    UserDetails userDetails){
+                                    UserDetails userDetails,
+                                    CaldavCollection caldavCollection){
         CaldavRequestMethod method = CaldavRequestMethod.convertToEnum(httpMethod);
         switch (method){
             case GET:
@@ -52,7 +51,7 @@ public class MainCollectionService {
             case HEAD:
                 return getHeadResponse(requestBody, userDetails);
             case PROPFIND:
-                return getPorpfindResponse(requestBody, userDetails);
+                return getPorpfindResponse(requestBody, userDetails, caldavCollection);
             case PROPPATCH:
                 return getProppatchResponse(requestBody, userDetails);
             case REPORT:
@@ -91,9 +90,9 @@ public class MainCollectionService {
         return "";
     }
 
-    public String getPorpfindResponse(String requestBody, UserDetails userDetails){
+    public String getPorpfindResponse(String requestBody, UserDetails userDetails, CaldavCollection caldavCollection){
 
-        AbstractCaldavCollection collection = this.caldavCollectionBuilderImpl.build(CaldavCollection.MAIN_COLLECTTION, userDetails);
+        AbstractCaldavCollection collection = this.caldavCollectionBuilderImpl.build(caldavCollection, userDetails);
         SAXBuilder xmlBuilder = new SAXBuilder();
         org.jdom2.Document document;
 
@@ -114,7 +113,7 @@ public class MainCollectionService {
         }
         Element prop = propfind.getChildren().get(0);
 
-        return this.caldavResponseBuilderImpl.getResponse(collection, prop);
+        return this.caldavResponseBuilderImpl.getPropfındResponse(collection, prop);
     }
 
     public String getProppatchResponse(String requestBody, UserDetails userDetails){

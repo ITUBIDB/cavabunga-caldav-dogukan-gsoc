@@ -52,7 +52,7 @@ public enum CaldavProperty {
     CALENDAR_DESCRIPTION("calendar-description"){
         public AbstractCaldavProperty create() { return new CalendarDescription(); }
     },
-    SUPPORTED_CALENDAR_COMPONENT_SET("calendar-user-address-set"){
+    SUPPORTED_CALENDAR_COMPONENT_SET("supported-calendar-component-set"){
         public AbstractCaldavProperty create() { return new SupportedCalendarComponentSet(); }
     },
     CALENDAR_COLOR("calendar-color"){

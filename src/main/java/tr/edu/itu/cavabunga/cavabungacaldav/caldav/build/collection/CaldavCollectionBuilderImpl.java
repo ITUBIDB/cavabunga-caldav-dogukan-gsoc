@@ -12,9 +12,7 @@ import tr.edu.itu.cavabunga.cavabungacaldav.caldav.enumerator.ExpressionEnum;
 import tr.edu.itu.cavabunga.cavabungacaldav.caldav.factory.CaldavCollectionFactory;
 import tr.edu.itu.cavabunga.cavabungacaldav.caldav.factory.CaldavPropertyFactory;
 import tr.edu.itu.cavabunga.cavabungacaldav.configuration.caldav.CaldavCollectionConfiguration;
-import tr.edu.itu.cavabunga.cavabungacaldav.configuration.caldav.CaldavCollectionConfigurationImpl;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -48,8 +46,10 @@ public class CaldavCollectionBuilderImpl implements CaldavCollectionBuilder {
                    AbstractCaldavProperty property;
                    property = this.caldavPropertyFactory.createProperty(p.getKey());
                    property.setXmlTag(p.getKey().toString());
-                   property.setXmlValue(expressionReplacer(caldavCollection, p.getKey()));
-                   collection.addProperty(property);
+                   property.setXmlValue(propertyExpressionReplacer(caldavCollection, p.getKey()));
+                   if(!collection.getProperties().contains(property)){
+                       collection.addProperty(property);
+                   }
                }
                return collection;
            }catch (Exception e){
@@ -59,10 +59,10 @@ public class CaldavCollectionBuilderImpl implements CaldavCollectionBuilder {
 
     public AbstractCaldavCollection buildCollection(CaldavCollection caldavCollection){
         AbstractCaldavCollection collection = this.caldavCollectionFactory.createCollection(caldavCollection);
+        collection.setUri(this.collectionExpressionReplacer(caldavCollection));
         if(this.caldavCollectionConfiguration.getCollectionCollectionMap().get(caldavCollection) != null ||
                 !this.caldavCollectionConfiguration.getCollectionCollectionMap().get(caldavCollection).isEmpty()){
             for (CaldavCollection c : this.caldavCollectionConfiguration.getCollectionCollectionMap().get(caldavCollection)) {
-                collection.setUri("");
                 collection.addCollection(buildProperties(this.buildCollection(c), c));
             }
         }
@@ -78,7 +78,7 @@ public class CaldavCollectionBuilderImpl implements CaldavCollectionBuilder {
 
     }
 
-    public String expressionReplacer(CaldavCollection caldavCollection, CaldavProperty p){
+    public String propertyExpressionReplacer(CaldavCollection caldavCollection, CaldavProperty p){
         String defaultExpression = this.caldavCollectionConfiguration.getCollectionPropertyMap().get(caldavCollection).get(p);
         String result;
         result = defaultExpression;
@@ -86,5 +86,16 @@ public class CaldavCollectionBuilderImpl implements CaldavCollectionBuilder {
                 result = result.replace(e.getKey().toString(), e.getValue());
         }
         return result;
+    }
+
+    public String collectionExpressionReplacer(CaldavCollection caldavCollection){
+        String defaultExpression2 = caldavCollection.toString();
+        String result2;
+        result2 = defaultExpression2;
+
+        for(Map.Entry<ExpressionEnum, String> f : this.argumentReplaceList.entrySet()){
+           result2 = result2.replace(f.getKey().toString(), f.getValue());
+        }
+        return result2;
     }
 }

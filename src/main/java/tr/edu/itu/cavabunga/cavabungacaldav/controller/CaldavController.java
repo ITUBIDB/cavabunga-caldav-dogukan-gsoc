@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import tr.edu.itu.cavabunga.cavabungacaldav.caldav.enumerator.CaldavCollection;
 import tr.edu.itu.cavabunga.cavabungacaldav.service.MainCollectionService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,7 +23,7 @@ public class CaldavController {
 
     @RequestMapping("/")
     public String getMainCollection(HttpServletRequest httpServletRequest, @RequestBody(required = false) String requestBody, @AuthenticationPrincipal UserDetails userDetails){
-         return this.mainCollectionService.getCaldavResponse(httpServletRequest.getMethod(), requestBody, userDetails);
+         return this.mainCollectionService.getCaldavResponse(httpServletRequest.getMethod(), requestBody, userDetails, CaldavCollection.MAIN_COLLECTION);
     }
 
     /*

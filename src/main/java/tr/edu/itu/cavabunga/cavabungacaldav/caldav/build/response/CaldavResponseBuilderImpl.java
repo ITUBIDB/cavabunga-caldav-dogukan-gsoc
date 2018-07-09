@@ -1,9 +1,11 @@
 package tr.edu.itu.cavabunga.cavabungacaldav.caldav.build.response;
 
 import lombok.Data;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.springframework.stereotype.Component;
 import tr.edu.itu.cavabunga.cavabungacaldav.caldav.AbstractCaldavCollection;
@@ -20,12 +22,14 @@ public class CaldavResponseBuilderImpl implements CaldavResponseBuilder {
     private CaldavCollectionConfiguration caldavCollectionConfigurationImpl;
     private Element multistatus = new Element("multistatus");
 
-    public String getResponse(AbstractCaldavCollection collection, Element prop){
+    public String getPropfındResponse(AbstractCaldavCollection collection, Element prop){
         Document result = new Document();
         multistatus.detach();
         multistatus.addContent(this.buildPropfindResponse(collection,prop));
         result.setRootElement(multistatus);
-        return new XMLOutputter().outputString(result);
+
+        this.multistatus = new Element("multistatus");
+        return StringEscapeUtils.unescapeXml(new XMLOutputter().outputString(result));
     }
 
     public Element buildPropfindResponse(AbstractCaldavCollection collection, Element prop) {
@@ -94,9 +98,13 @@ public class CaldavResponseBuilderImpl implements CaldavResponseBuilder {
         propstatFound.detach();
         propstatNotFound.detach();
 
-        response.addContent(new Element(collection.getClass().getSimpleName()));
+        Element uri = new Element("href");
+        uri.setText(collection.getUri());
+        uri.detach();
+        response.addContent(uri);
         response.addContent(propstatFound);
         response.addContent(propstatNotFound);
+
 
         this.multistatus.detach();
         this.multistatus.addContent(response);
