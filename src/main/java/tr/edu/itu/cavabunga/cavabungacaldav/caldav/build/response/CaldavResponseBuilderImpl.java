@@ -39,7 +39,7 @@ public class CaldavResponseBuilderImpl implements CaldavResponseBuilder {
         List<Element> notFoundProperties = new ArrayList<>();
 
         for (Element e : prop.getChildren()) {
-            String t;
+            String t = new String();
             try {
                 t = CaldavProperty.convertToEnum(e.getName()).create().getClass().getName();
             } catch (Exception exp) {
@@ -50,14 +50,12 @@ public class CaldavResponseBuilderImpl implements CaldavResponseBuilder {
             boolean found = false;
             for (AbstractCaldavProperty p : collection.getProperties()) {
                 Element add = xmlBuilder.getJDOMFactory().element(p.getXmlTag());
-                String test = p.getClass().getName();
-                if (t.equals(test)) {
+                if (t.equals(p.getClass().getName())) {
                     add.setText(p.getXmlValue());
                     add.setNamespace(e.getNamespace());
+                    found = true;
                     if (!foundProperties.contains(add)) {
                         foundProperties.add(add);
-                        found = true;
-                        break;
                     }
                 }
             }
@@ -72,9 +70,9 @@ public class CaldavResponseBuilderImpl implements CaldavResponseBuilder {
         Element statusFound = new Element("status", prop.getNamespace());
         statusFound.setText("HTTP/1.1 200 OK");
         for (Element k : foundProperties) {
-            System.out.println(k.getName());
-            k.detach();
-            propFound.addContent(k);
+            Element z = k.clone();
+            z.detach();
+            propFound.addContent(z);
         }
         propFound.detach();
         propstatFound.addContent(propFound);
@@ -86,15 +84,14 @@ public class CaldavResponseBuilderImpl implements CaldavResponseBuilder {
         Element statusNotFound = new Element("status", prop.getNamespace());
         statusNotFound.setText("HTTP/1.1 404 Not Found");
         for (Element q : notFoundProperties) {
-            System.out.println(q.getName());
-            q.detach();
-            propNotFound.addContent(q);
+            Element r = q.clone();
+            r.detach();
+            propNotFound.addContent(r);
         }
         propNotFound.detach();
         propstatNotFound.addContent(propNotFound);
         statusNotFound.detach();
         propstatNotFound.addContent(statusNotFound);
-
         propstatFound.detach();
         propstatNotFound.detach();
 
@@ -104,7 +101,6 @@ public class CaldavResponseBuilderImpl implements CaldavResponseBuilder {
         response.addContent(uri);
         response.addContent(propstatFound);
         response.addContent(propstatNotFound);
-
 
         this.multistatus.detach();
         this.multistatus.addContent(response);
