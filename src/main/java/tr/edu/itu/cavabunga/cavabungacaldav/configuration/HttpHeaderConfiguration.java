@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @ControllerAdvice
-public class myAwesomeFilter extends OncePerRequestFilter {
+public class HttpHeaderConfiguration extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,

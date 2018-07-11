@@ -25,12 +25,13 @@ public class HttpMethods extends WebMvcConfigurationSupport {
         private static final long serialVersionUID = 1L;
 
         @Override
-        protected void service( HttpServletRequest request,  HttpServletResponse response) throws ServletException, IOException {
-            if ("PROPFIND".equals(request.getMethod())) {
+        protected void service(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+            if ("REPORT".equals(request.getMethod())) {
+                super.doGet(request, response);
+            } else if("PROPFIND".equals(request.getMethod())){
                 super.doPost(request, response);
-            }
-            else {
-                 super.service(request, response);
+            }else {
+                super.service(request, response);
             }
         }
     }
@@ -39,17 +40,13 @@ public class HttpMethods extends WebMvcConfigurationSupport {
         SpringApplication.run(HttpMethods.class, args);
     }
 
-    @RequestMapping("/method")
-    @ResponseBody
-    public String customMethod(HttpServletRequest request) {
-        return request.getMethod();
-    }
+
 
     @Override
     @Bean
     public RequestMappingHandlerAdapter requestMappingHandlerAdapter() {
         final RequestMappingHandlerAdapter requestMappingHandlerAdapter = super.requestMappingHandlerAdapter();
-        requestMappingHandlerAdapter.setSupportedMethods("PROPFIND", "POST", "GET"); // add all methods your controllers need to support
+        requestMappingHandlerAdapter.setSupportedMethods("GET", "POST", "PUT", "DELETE", "PROPFIND", "REPORT", "OPTIONS"); // add all methods your controllers need to support
 
         return requestMappingHandlerAdapter;
     }

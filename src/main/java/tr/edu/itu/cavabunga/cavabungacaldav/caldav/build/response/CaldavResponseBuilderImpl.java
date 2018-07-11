@@ -4,8 +4,8 @@ import lombok.Data;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
-import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.springframework.stereotype.Component;
 import tr.edu.itu.cavabunga.cavabungacaldav.caldav.AbstractCaldavCollection;
@@ -20,19 +20,29 @@ import java.util.List;
 @Component
 public class CaldavResponseBuilderImpl implements CaldavResponseBuilder {
     private CaldavCollectionConfiguration caldavCollectionConfigurationImpl;
-    private Element multistatus = new Element("multistatus");
+    private Element multistatus = new Element("multistatus", Namespace.getNamespace("D","DAV:"));
 
     public String getPropfindResponse(AbstractCaldavCollection collection, Element prop){
         Document result = new Document();
         multistatus.detach();
-        multistatus.addContent(this.buildPropfindResponse(collection,prop));
+        multistatus.addContent(this.buildCollectionResponse(collection,prop));
         result.setRootElement(multistatus);
 
-        this.multistatus = new Element("multistatus");
+        this.multistatus = new Element("multistatus", Namespace.getNamespace("D","DAV:"));
         return StringEscapeUtils.unescapeXml(new XMLOutputter().outputString(result));
     }
 
-    public Element buildPropfindResponse(AbstractCaldavCollection collection, Element prop) {
+    public String getReportResponse(AbstractCaldavCollection collection, Element prop){
+        Document result = new Document();
+        multistatus.detach();
+        multistatus.addContent(this.buildCollectionResponse(collection,prop));
+        result.setRootElement(multistatus);
+
+        this.multistatus = new Element("multistatus", Namespace.getNamespace("D","DAV:"));
+        return StringEscapeUtils.unescapeXml(new XMLOutputter().outputString(result));
+    }
+
+    public Element buildCollectionResponse(AbstractCaldavCollection collection, Element prop) {
         Element response = new Element("response", prop.getNamespace());
         SAXBuilder xmlBuilder = new SAXBuilder();
         List<Element> foundProperties = new ArrayList<>();
@@ -95,10 +105,11 @@ public class CaldavResponseBuilderImpl implements CaldavResponseBuilder {
         propstatFound.detach();
         propstatNotFound.detach();
 
-        Element uri = new Element("href");
-        uri.setText(collection.getUri());
-        uri.detach();
-        response.addContent(uri);
+        //Element uri = new Element("href");
+        //uri.setText(collection.getUri());
+        //uri.detach();
+        response.setText("<href>" + collection.getUri() + "</href>");
+        //response.addContent(uri);
         response.addContent(propstatFound);
         response.addContent(propstatNotFound);
 
@@ -107,7 +118,7 @@ public class CaldavResponseBuilderImpl implements CaldavResponseBuilder {
         if(collection.getCollections() != null && !collection.getCollections().isEmpty()){
             for(AbstractCaldavCollection c : collection.getCollections()){
                 this.multistatus.detach();
-                this.multistatus.addContent(this.buildPropfindResponse(c, prop));
+                this.multistatus.addContent(this.buildCollectionResponse(c, prop));
             }
         }
 

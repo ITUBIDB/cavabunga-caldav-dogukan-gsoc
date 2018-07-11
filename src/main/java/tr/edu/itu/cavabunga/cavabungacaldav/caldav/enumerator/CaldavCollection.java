@@ -14,7 +14,7 @@ public enum CaldavCollection {
             return new UserAddressCollection();
         }
     },
-    USER_ADDRESS_ICAL_COLLECTION("/{username}/addresses/{ical_file}"){
+    USER_ADDRESS_ICAL_COLLECTION("/{username}/addresses/addressbook.ics"){
         public AbstractCaldavCollection create(){
             return new UserAddressIcalCollection();
         }
@@ -24,7 +24,7 @@ public enum CaldavCollection {
             return new UserCalendarCollection();
         }
     },
-    USER_CALENDAR_ICAL_COLLECTION("/{username}/calendar/{ical_file}"){
+    USER_CALENDAR_ICAL_COLLECTION("/{username}/calendar/calendar.ics"){
         public AbstractCaldavCollection create(){
             return new UserCalendarIcalCollection();
         }

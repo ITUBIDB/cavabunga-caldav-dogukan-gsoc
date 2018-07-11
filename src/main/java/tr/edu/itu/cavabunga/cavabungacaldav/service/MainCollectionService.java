@@ -33,7 +33,7 @@ public class MainCollectionService {
         this.caldavResponseBuilderImpl = caldavResponseBuilderImpl;
     }
 
-    public String getCaldavResponse(HttpServletRequest httpServletRequest,
+    /*public String getCaldavResponse(HttpServletRequest httpServletRequest,
                                     HttpServletResponse httpServletResponse,
                                     String requestBody,
                                     UserDetails userDetails,
@@ -55,7 +55,7 @@ public class MainCollectionService {
             case HEAD:
                 return getHeadResponse(httpServletRequest, requestBody, userDetails, caldavCollection);
             case PROPFIND:
-                return getPorpfindResponse(httpServletRequest, requestBody, userDetails, caldavCollection);
+                return getPropfindResponse(httpServletRequest, requestBody, userDetails, caldavCollection);
             case PROPPATCH:
                 return getProppatchResponse(httpServletRequest, requestBody, userDetails, caldavCollection);
             case REPORT:
@@ -63,40 +63,40 @@ public class MainCollectionService {
             default:
                 throw new CaldavException("Method enum didn't match any");
         }
-    }
+    }*/
 
 
-    public String getGetResponse(HttpServletRequest httpServletRequest, String requestBody, UserDetails userDetails, CaldavCollection caldavCollection){
+    public String getGetResponse(UserDetails userDetails, CaldavCollection caldavCollection){
         return "";
     }
 
-    public String getPostResponse(HttpServletRequest httpServletRequest, String requestBody, UserDetails userDetails, CaldavCollection caldavCollection){
+    public String getPostResponse( UserDetails userDetails, CaldavCollection caldavCollection){
         return "";
     }
 
-    public String getPutResponse(HttpServletRequest httpServletRequest, String requestBody, UserDetails userDetails, CaldavCollection caldavCollection){
+    public String getPutResponse(UserDetails userDetails, CaldavCollection caldavCollection){
         return "";
     }
 
-    public String getDeleteResponse(HttpServletRequest httpServletRequest, String requestBody, UserDetails userDetails, CaldavCollection caldavCollection){
+    public String getDeleteResponse(UserDetails userDetails, CaldavCollection caldavCollection){
         return "";
     }
 
-    public String getPatchResponse(HttpServletRequest httpServletRequest, String requestBody, UserDetails userDetails, CaldavCollection caldavCollection){
+    public String getPatchResponse(UserDetails userDetails, CaldavCollection caldavCollection){
         return "";
     }
 
-    public String getOptionsResponse(HttpServletResponse httpServletResponse, HttpServletRequest httpServletRequest, String requestBody, UserDetails userDetails, CaldavCollection caldavCollection){
+    public String getOptionsResponse( String requestBody, CaldavCollection caldavCollection){
         return "";
     }
 
-    public String getHeadResponse(HttpServletRequest httpServletRequest, String requestBody, UserDetails userDetails, CaldavCollection caldavCollection){
+    public String getHeadResponse(String requestBody, UserDetails userDetails, CaldavCollection caldavCollection){
         return   "";
     }
 
-    public String getPorpfindResponse(HttpServletRequest httpServletRequest, String requestBody, UserDetails userDetails, CaldavCollection caldavCollection){
+    public String getPropfindResponse(String requestBody, UserDetails userDetails, CaldavCollection caldavCollection, String depth){
 
-        AbstractCaldavCollection collection = this.caldavCollectionBuilderImpl.build(httpServletRequest, caldavCollection, userDetails);
+        AbstractCaldavCollection collection = this.caldavCollectionBuilderImpl.build(caldavCollection, userDetails, depth);
         SAXBuilder xmlBuilder = new SAXBuilder();
         org.jdom2.Document document;
 
@@ -120,56 +120,39 @@ public class MainCollectionService {
         return this.caldavResponseBuilderImpl.getPropfindResponse(collection, prop);
     }
 
-    public String getProppatchResponse(HttpServletRequest httpServletRequest, String requestBody, UserDetails userDetails, CaldavCollection caldavCollection){
+    public String getProppatchResponse(UserDetails userDetails, CaldavCollection caldavCollection){
         return "";
     }
 
-    public String getReportResponse(HttpServletRequest httpServletRequest, String requestBody, UserDetails userDetails, CaldavCollection caldavCollection){
-        return "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
-                "<multistatus xmlns=\"DAV:\" xmlns:C=\"urn:ietf:params:xml:ns:caldav\">\n" +
-                " <response>\n" +
-                "  <href>/testuser/calendar/calendar.ics</href>\n" +
-                "  <propstat>\n" +
-                "   <prop>\n" +
-                "    <getetag>-1</getetag>\n" +
-                "    <getetag>-1</getetag>\n" +
-                "    <C:calendar-data>BEGIN:VCALENDAR\n" +
-                "CALSCALE:GREGORIAN\n" +
-                "PRODID:-//Ximian//NONSGML Evolution Calendar//EN\n" +
-                "VERSION:2.0\n" +
-                "BEGIN:VTIMEZONE\n" +
-                "TZID:/freeassociation.sourceforge.net/Europe/Istanbul\n" +
-                "X-LIC-LOCATION:Europe/Istanbul\n" +
-                "BEGIN:STANDARD\n" +
-                "TZNAME:+03\n" +
-                "DTSTART:19700907T000000\n" +
-                "TZOFFSETFROM:+0300\n" +
-                "TZOFFSETTO:+0300\n" +
-                "END:STANDARD\n" +
-                "END:VTIMEZONE\n" +
-                "\n" +
-                "BEGIN:VEVENT\n" +
-                "UID:20170505T114658Z-1764-0-1-5@localhost.localdomain\n" +
-                "DTSTAMP:20170505T114631Z\n" +
-                "DTSTART;TZID=/freeassociation.sourceforge.net/Europe/Istanbul:\n" +
-                " 20170509T090000\n" +
-                "DTEND;TZID=/freeassociation.sourceforge.net/Europe/Istanbul:\n" +
-                " 20170509T093000\n" +
-                "SEQUENCE:2\n" +
-                "SUMMARY:Test-1-2-3\n" +
-                "LOCATION:bidb\n" +
-                "TRANSP:OPAQUE\n" +
-                "CLASS:PUBLIC\n" +
-                "CREATED:20170505T114800Z\n" +
-                "LAST-MODIFIED:20170505T114800Z\n" +
-                "END:VEVENT\n" +
-                "\n" +
-                "END:VCALENDAR\n" +
-                "</C:calendar-data>\n" +
-                "   </prop>\n" +
-                "   <status>HTTP/1.1 200 OK</status>\n" +
-                "  </propstat>\n" +
-                " </response>\n" +
-                "</multistatus>";
+    public String getReportResponse(String requestBody, UserDetails userDetails, CaldavCollection caldavCollection, String depth){
+        AbstractCaldavCollection collection = this.caldavCollectionBuilderImpl.build(caldavCollection, userDetails, depth);
+        SAXBuilder xmlBuilder = new SAXBuilder();
+        org.jdom2.Document document;
+
+        try{
+            document = xmlBuilder.build(new StringReader(requestBody));
+        }catch (Exception e){
+            throw new CaldavException("XML Parsing error, " + e.getMessage());
+        }
+
+        Element prop;
+        if(document.getRootElement().getName().equals("calendar-query")){
+            Element propfind = document.getRootElement();
+            if(!propfind.getChildren().get(0).getName().equals("prop")){
+                throw new CaldavException("prop element couldn't not found in calendar-query");
+            }
+            prop = propfind.getChildren().get(0);
+
+            return this.caldavResponseBuilderImpl.getReportResponse(collection, prop);
+        }else if(document.getRootElement().getName().equals("calendar-multiget")){
+            Element propfind = document.getRootElement();
+            if(!propfind.getChildren().get(0).getName().equals("prop")){
+                throw new CaldavException("prop element couldn't not found calendar-multiget");
+            }
+            prop = propfind.getChildren().get(0);
+            return this.caldavResponseBuilderImpl.getReportResponse(collection, prop);
+        }else{
+            throw new CaldavException("cannot found calendar-query or calendar-multiget");
+        }
     }
 }

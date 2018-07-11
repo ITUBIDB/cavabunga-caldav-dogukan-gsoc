@@ -105,6 +105,9 @@ public enum CaldavProperty {
     },
     GET_CTAG("getctag"){
         public AbstractCaldavProperty create() { return new GetCTag();}
+    },
+    GETCONTENTTYPE("getcontenttype"){
+        public AbstractCaldavProperty create() { return new GetContentType();}
     };
 
     private String text;
